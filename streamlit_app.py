@@ -28,7 +28,7 @@ In the meantime, below is an example of what you can do with just a few lines of
 
 with st.echo(code_location='below'):
 
-    pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype=torch.float16, variant="fp16", device_map = 'cpu')
+    pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype=torch.float16, variant="fp16", device_map = 'auto')
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.enable_model_cpu_offload()
 
