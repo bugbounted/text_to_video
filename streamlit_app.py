@@ -13,7 +13,6 @@ import imageio
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from skimage.transform import resize
-from IPython.display import HTML
 
 """
 # Welcome to Streamlit!
