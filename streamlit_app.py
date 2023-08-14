@@ -31,6 +31,7 @@ with st.echo(code_location='below'):
     pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype=torch.float16, variant="fp16")
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.enable_model_cpu_offload()
+    pipe.model.to("cpu")
 
     prompt_text = st.text_input('Prompt', 'Write Prompt Here')
     num_inference_steps = st.number_input('num_inference_steps: default 25')
