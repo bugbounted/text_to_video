@@ -18,11 +18,11 @@ from skimage.transform import resize
 # Welcome to text to video!
 """
 
-pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype=torch.float16, variant="fp16", device_map = 'auto')
-pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
-pipe.enable_model_cpu_offload()
-
 def main():
+
+    pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype=torch.float16, variant="fp16", device_map = 'auto')
+    pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+    pipe.enable_model_cpu_offload()
 
     prompt_text = st.text_input('Prompt', 'Write Prompt Here')
     num_inference_steps = st.number_input('num_inference_steps: default 25')
