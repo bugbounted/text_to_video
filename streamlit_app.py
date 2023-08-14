@@ -4,6 +4,17 @@ import math
 import pandas as pd
 import streamlit as st
 
+import torch
+from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
+from diffusers.utils import export_to_video
+from diffusers import DiffusionPipeline
+
+import imageio
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from skimage.transform import resize
+from IPython.display import HTML
+
 """
 # Welcome to Streamlit!
 
@@ -15,24 +26,22 @@ forums](https://discuss.streamlit.io).
 In the meantime, below is an example of what you can do with just a few lines of code:
 """
 
+pipe = DiffusionPipeline.from_pretrained("TempoFunk/makeavid-sd-jax")
+pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+pipe.enable_model_cpu_offload()
 
 with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
 
-    Point = namedtuple('Point', 'x y')
-    data = []
+    prompt_text = st.text_input('Prompt', 'Write Prompt Here')
+    num_inference_steps = st.number_input('num_inference_steps: default 25')
+    num_frames = st.number_input('num_frames: default 20')
 
-    points_per_turn = total_points / num_turns
+    if st.button('Generate'):
+        video_frames = pipe(prompt_text, num_inference_steps=num_inference_steps,num_frames=num_frames).frames
+        video_path = export_to_video(video_frames)
 
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
-
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+    if st.button('Play'):
+        st.video(video_path)
+    
+    if st.button('Download'):
+        st.download_button(label="Download Video", data=video_path, file_name= f'{prompt_text}_video.mp4')
