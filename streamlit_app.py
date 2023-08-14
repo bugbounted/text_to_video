@@ -18,11 +18,13 @@ from skimage.transform import resize
 # Welcome to text to video!
 """
 
-def main():
-
+def call_model():
     pipe = DiffusionPipeline.from_pretrained("damo-vilab/text-to-video-ms-1.7b", torch_dtype=torch.float16, variant="fp16", device_map = 'auto')
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
     pipe.enable_model_cpu_offload()
+    return pipe
+
+def main(pipe = call_model()):
 
     prompt_text = st.text_input('Prompt', 'Write Prompt Here')
     num_inference_steps = st.number_input('num_inference_steps: default 25')
@@ -31,10 +33,12 @@ def main():
     if st.button('Generate and play'):
         video_frames = pipe(prompt_text, num_inference_steps=int(num_inference_steps),num_frames=int(num_frames)).frames
         video_path = export_to_video(video_frames)
-        st.video(video_path)
+        video_file = open(video_path, 'rb')
+        video_bytes = video_file.read()
+        st.video(video_bytes)
     
     if st.button('Download'):
-        st.download_button(label="Download Video", data=video_path, file_name= f'{prompt_text}_video.mp4')
+        st.download_button(label="Download Video", data=video_file, file_name= f'{prompt_text}_video.mp4')
 
 if __name__ == "__main__":
-    main()
+    main(pipe = call_model())
