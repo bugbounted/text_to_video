@@ -29,7 +29,7 @@ def main():
     num_frames = st.number_input('num_frames: default 20')
 
     if st.button('Generate and play'):
-        video_frames = pipe(prompt_text, num_inference_steps=num_inference_steps,num_frames=num_frames).frames
+        video_frames = pipe(prompt_text, num_inference_steps=int(num_inference_steps),num_frames=int(num_frames)).frames
         video_path = export_to_video(video_frames)
         st.video(video_path)
     
